@@ -4,6 +4,7 @@ from gpt4all import GPT4All
 from pathlib import Path
 import threading
 import re  # For regex validation
+import webbrowser  # To open GitHub link
 
 # Define the correct model path (models directory)
 model_dir = Path(__file__).parent / "models"
@@ -19,6 +20,9 @@ if not model_path.is_file():
 # Load your AI model using the directory, but pass the model name without extension
 model = GPT4All(model_name="phi", model_path=str(model_dir), allow_download=False)
 
+# Function to open GitHub link
+def open_github():
+    webbrowser.open("https://github.com/tassopsaltakis")
 
 # Function to validate the generated username based on the toggles
 def validate_username(username, length, allow_numbers):
@@ -28,7 +32,6 @@ def validate_username(username, length, allow_numbers):
         pattern += "0-9"  # Allow numbers if the toggle is on
     pattern += "]{" + str(length) + "}$"  # Enforce the exact length
     return re.match(pattern, username) is not None
-
 
 # Function to refine an invalid username by stripping invalid characters
 def refine_username(username, length, allow_numbers):
@@ -42,7 +45,6 @@ def refine_username(username, length, allow_numbers):
 
     # Truncate to the required length if necessary
     return refined_username[:length]
-
 
 # Function to generate a username based on user selections (runs in a separate thread)
 def generate_username():
@@ -61,25 +63,24 @@ def generate_username():
         valid_username = False
         while not valid_username:
             # Generate a username using the AI model
-            print(f"Prompt: {prompt}")  # Debug the prompt being sent
+            debug_text.insert(tk.END, f"Prompt: {prompt}\n")  # Add the prompt to the debug box
             username = model.generate(prompt, n_predict=30).strip()
 
-            # Extract the first valid word from the response (ignore things like "solution:")
+            # Extract the first valid word from the response
             username = username.split(':')[1].strip() if ':' in username else username
-            print(f"Generated Username (before validation): {username}")
+            debug_text.insert(tk.END, f"Generated Username (before validation): {username}\n")
 
             # Validate the username
             if validate_username(username, length, allow_numbers):
                 valid_username = True
+                debug_text.insert(tk.END, f"Valid Username: {username}\n")
             else:
                 # Refine the username and attempt to fix it
-                print(f"Invalid username: {username}, refining...")
+                debug_text.insert(tk.END, f"Invalid username: {username}, refining...\n")
                 username = refine_username(username, length, allow_numbers)
-                print(f"Refined Username: {username}")
+                debug_text.insert(tk.END, f"Refined Username: {username}\n")
                 if validate_username(username, length, allow_numbers):
                     valid_username = True
-
-        print(f"Valid Username: {username}")  # Debug the validated username
 
         # Display the validated username in a message box (in the main thread)
         root.after(0, lambda: messagebox.showinfo("Generated Username", f"Your username: {username}"))
@@ -87,23 +88,31 @@ def generate_username():
     except Exception as e:
         root.after(0, lambda: messagebox.showerror("Error", f"An error occurred while generating the username: {e}"))
 
-
 # Function to handle threading and keep the GUI responsive
 def threaded_username_generation():
     threading.Thread(target=generate_username).start()
 
-
 # Setting up the GUI
 root = tk.Tk()
-root.title("Username Generator")
-root.geometry("400x300")
+root.title("UNGenerator-Phi")
+root.geometry("600x450")
 
 # Variables for the checkboxes
 number_var = tk.BooleanVar()
 length_var = tk.IntVar(value=8)  # Default length is 8
 
 # UI elements
-tk.Label(root, text="Username Generator", font=("Arial", 16)).pack(pady=10)
+tk.Label(root, text="UNGenerator-Phi", font=("Arial", 16)).pack(pady=10)
+
+# Debug box to show the process of generation
+debug_frame = tk.Frame(root)
+debug_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+debug_label = tk.Label(debug_frame, text="Debug Output:", anchor="w")
+debug_label.pack(anchor="w", padx=5)
+
+debug_text = tk.Text(debug_frame, height=10, state="normal", wrap="word", bg="#f0f0f0", relief="sunken", bd=1)
+debug_text.pack(fill="both", padx=10, pady=5, expand=True)
 
 tk.Checkbutton(root, text="Include Numbers", variable=number_var).pack(anchor='w', padx=20)
 
@@ -112,6 +121,17 @@ tk.Entry(root, textvariable=length_var).pack(anchor='w', padx=20)
 
 # Generate button (triggers the threaded function)
 tk.Button(root, text="Generate Username", command=threaded_username_generation).pack(pady=20)
+
+# Footer with version and GitHub link
+footer_frame = tk.Frame(root)
+footer_frame.pack(side="bottom", fill="x", pady=10)
+
+version_label = tk.Label(footer_frame, text="Version 1.0", anchor="e")
+version_label.pack(side="right", padx=10)
+
+github_link = tk.Label(footer_frame, text="By: tassopsaltakis", fg="blue", cursor="hand2", anchor="w")
+github_link.pack(side="left", padx=10)
+github_link.bind("<Button-1>", lambda e: open_github())
 
 # Start the GUI loop
 root.mainloop()
