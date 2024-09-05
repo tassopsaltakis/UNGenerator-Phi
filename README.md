@@ -15,3 +15,7 @@ UnGenPhi is a user-name generator that combines the power of **Phi-3.5-mini-inst
 
 - **GPT4ALL:** Provides a robust interface for interacting with the Phi model.
   - [Find GPT4ALL Info Here](https://github.com/nomic-ai/gpt4all)
+
+### WARNING
+- The Model is too large for GitHub; I have it here on GoogleDrive in case you want to contribute to the project and test:     
+ - https://drive.google.com/file/d/1M1Mu2QmKXVHzyInvyBgpaib_mq1Fk96E/view?usp=sharing
