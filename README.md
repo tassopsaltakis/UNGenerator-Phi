@@ -1,6 +1,6 @@
 # UnGenPhi
 
-UnGenPhi is a user-name generator that combines the power of **Phi-3.5-mini-instruct** and **GPT4ALL** to provide unique and creative usernames. The tool uses GPT4ALL as a handler for the Phi model, allowing seamless interaction and username generation.
+UnGenPhi (I like calling it U-gen-phi) is a user-name generator that combines the power of **Phi-3.5-mini-instruct** and **GPT4ALL** to provide unique and creative usernames. The tool uses GPT4ALL as a handler for the Phi model, allowing seamless interaction and username generation.
 
 ## Features
 
