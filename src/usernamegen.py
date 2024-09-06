@@ -111,9 +111,9 @@ root.geometry("620x600")
 root.config(bg="#1F1F1F")  # Dark background
 
 # Load the custom font (AkshaRegular.ttf)
-custom_font_path = Path(__file__).parent / "fonts" / "AkshaRegular.ttf"
-root.tk.call("font", "create", "AkshaRegular", "-family", "AkshaRegular", "-size", 12)
-custom_font = tkFont.Font(family="AkshaRegular", size=12)
+custom_font_path = Path(__file__).parent / "fonts" / "AakashaRegular.ttf"
+root.tk.call("font", "create", "AkashaRegular", "-family", "AkashaRegular", "-size", 12)
+custom_font = tkFont.Font(family="AkashaRegular", size=12)
 
 # Variables for checkboxes
 number_var = tk.BooleanVar()
@@ -123,7 +123,7 @@ futuristic_var = tk.BooleanVar()
 funny_var = tk.BooleanVar()
 
 # UI elements
-tk.Label(root, text="UNGenerator-Phi", font=("AkshaRegular", 18), bg="#1F1F1F", fg="#FFFFFF").pack(pady=10)
+tk.Label(root, text="UNGenerator-Phi", font=("AkashaRegular", 18), bg="#1F1F1F", fg="#FFFFFF").pack(pady=10)
 
 # Debug box
 debug_frame = tk.Frame(root, bg="#1F1F1F")
