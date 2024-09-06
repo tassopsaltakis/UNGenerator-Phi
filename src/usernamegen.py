@@ -1,24 +1,39 @@
 import tkinter as tk
 from tkinter import messagebox
-from gpt4all import GPT4All
+from llama_cpp import Llama
 from pathlib import Path
 import threading
 import re  # For regex validation
 import webbrowser  # To open GitHub link
+import sys
+import os
+import contextlib  # For suppressing output
+
+# Function to suppress stdout and stderr
+@contextlib.contextmanager
+def suppress_output():
+    with open(os.devnull if os.name == 'posix' else 'nul', "w") as devnull:
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        sys.stdout = devnull
+        sys.stderr = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
 
 # Define the correct model path (models directory)
 model_dir = Path(__file__).parent / "models"
 model_path = model_dir / "phi.gguf"
 
-# Ensure the correct model path is printed for debugging purposes
-print(f"Model Path: {model_path}")
-
 # Ensure the model file exists
 if not model_path.is_file():
     raise FileNotFoundError(f"Model file does not exist at path: {model_path}")
 
-# Load your AI model using the directory, but pass the model name without extension
-model = GPT4All(model_name="phi", model_path=str(model_dir), allow_download=False)
+# Load your AI model using llama_cpp with output suppression
+with suppress_output():
+    model = Llama(model_path=str(model_path))
 
 # Function to open GitHub link
 def open_github():
@@ -67,7 +82,11 @@ def generate_username():
         while not valid_username:
             # Generate a username using the AI model
             debug_text.insert(tk.END, f"Prompt: {prompt}\n")  # Add the prompt to the debug box
-            username = model.generate(prompt, n_predict=30).strip()
+
+            # Suppress Llama output during generation
+            with suppress_output():
+                response = model(prompt, max_tokens=30)
+                username = response['choices'][0]['text'].strip()
 
             # Extract the first valid word from the response
             username = username.split(':')[1].strip() if ':' in username else username
