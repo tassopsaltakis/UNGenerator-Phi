@@ -1,0 +1,22 @@
+ - ****. 1:14AM 9/5/24
+
+ I finally found what was causing those dll errors. After all of this time and after months of using this with those errors, I found it.
+
+ def load_llmodel_library():
+    ext = {"Darwin": "dylib", "Linux": "so", "Windows": "dll"}[platform.system()]
+
+    try:
+        # Try to load the library
+        lib = ctypes.CDLL(str(MODEL_LIB_PATH / f"libllmodel.{ext}"))
+    except (FileNotFoundError, OSError):
+        if ext != 'dll':
+            raise
+        # Fallback to MSVC on Windows
+        try:
+            lib = ctypes.CDLL(str(MODEL_LIB_PATH / "llmodel.dll"))
+        except (FileNotFoundError, OSError):
+            print("Warning: Optional llmodel.dll not found. Proceeding without it.")
+            return None  # Return None if the library is not found
+    return lib
+
+llmodel = load_llmodel_library()

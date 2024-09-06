@@ -24,6 +24,7 @@ model = GPT4All(model_name="phi", model_path=str(model_dir), allow_download=Fals
 def open_github():
     webbrowser.open("https://github.com/tassopsaltakis")
 
+
 # Function to validate the generated username based on the toggles
 def validate_username(username, length, allow_numbers):
     # Construct a regex pattern based on the toggles
@@ -32,6 +33,7 @@ def validate_username(username, length, allow_numbers):
         pattern += "0-9"  # Allow numbers if the toggle is on
     pattern += "]{" + str(length) + "}$"  # Enforce the exact length
     return re.match(pattern, username) is not None
+
 
 # Function to refine an invalid username by stripping invalid characters
 def refine_username(username, length, allow_numbers):
@@ -45,6 +47,7 @@ def refine_username(username, length, allow_numbers):
 
     # Truncate to the required length if necessary
     return refined_username[:length]
+
 
 # Function to generate a username based on user selections (runs in a separate thread)
 def generate_username():
@@ -88,9 +91,11 @@ def generate_username():
     except Exception as e:
         root.after(0, lambda: messagebox.showerror("Error", f"An error occurred while generating the username: {e}"))
 
+
 # Function to handle threading and keep the GUI responsive
 def threaded_username_generation():
     threading.Thread(target=generate_username).start()
+
 
 # Setting up the GUI
 root = tk.Tk()
