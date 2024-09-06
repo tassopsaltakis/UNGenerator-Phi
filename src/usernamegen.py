@@ -3,11 +3,12 @@ from tkinter import messagebox
 from llama_cpp import Llama
 from pathlib import Path
 import threading
-import re  # For regex validation
-import webbrowser  # To open GitHub link
+import re
+import webbrowser
 import sys
 import os
-import contextlib  # For suppressing output
+import contextlib
+from tkinter import font as tkFont  # Import tkinter font
 
 # Function to suppress stdout and stderr
 @contextlib.contextmanager
@@ -39,7 +40,7 @@ with suppress_output():
 def open_github():
     webbrowser.open("https://github.com/tassopsaltakis")
 
-# Function to validate the generated username based on the toggles
+# Function to validate the generated username
 def validate_username(username, length, allow_numbers):
     pattern = "^[A-Za-z"
     if allow_numbers:
@@ -47,16 +48,15 @@ def validate_username(username, length, allow_numbers):
     pattern += "]{" + str(length) + "}$"
     return re.match(pattern, username) is not None
 
-# Function to refine an invalid username by stripping invalid characters
+# Function to refine an invalid username
 def refine_username(username, length, allow_numbers):
     allowed_characters = "A-Za-z"
     if allow_numbers:
         allowed_characters += "0-9"
-
     refined_username = re.sub(f'[^{allowed_characters}]', '', username)
     return refined_username[:length]
 
-# Function to generate a username based on user selections (runs in a separate thread)
+# Function to generate a username
 def generate_username():
     allow_numbers = number_var.get()
     length = length_var.get()
@@ -64,18 +64,15 @@ def generate_username():
     futuristic = futuristic_var.get()
     funny = funny_var.get()
 
-    prompt = (
-        f"Generate a unique username for online use that is exactly {length} characters long. "
-        f"{'It may include numbers,' if allow_numbers else 'It must not include numbers,'} "
-    )
+    prompt = f"Generate a unique username for online use that is exactly {length} characters long. "
+    prompt += "It may include numbers," if allow_numbers else "It must not include numbers,"
     if fantasy:
-        prompt += "The username should have a fantasy theme, like from a mythical world. "
+        prompt += " The username should have a fantasy theme, like from a mythical world."
     if futuristic:
-        prompt += "The username should have a futuristic, sci-fi vibe. "
+        prompt += " The username should have a futuristic, sci-fi vibe, something from the future."
     if funny:
-        prompt += "Make the username funny, with a humorous twist. "
-
-    prompt += "Only respond with the username itself and nothing else."
+        prompt += " Make the username funny, with a playful or humorous twist."
+    prompt += " Only respond with the username itself and nothing else."
 
     try:
         valid_username = False
@@ -103,68 +100,65 @@ def generate_username():
     except Exception as e:
         root.after(0, lambda: messagebox.showerror("Error", f"An error occurred while generating the username: {e}"))
 
-# Function to handle threading and keep the GUI responsive
+# Function to handle threading
 def threaded_username_generation():
     threading.Thread(target=generate_username).start()
 
-# Setting up the modern UI
+# Setting up the GUI
 root = tk.Tk()
 root.title("UNGenerator-Phi")
 root.geometry("620x600")
+root.config(bg="#1F1F1F")  # Dark background
 
-# Apply modern styling
-root.configure(bg="#F0F0F0")
-root.option_add("*Font", "Arial 12")
-root.option_add("*Button.Background", "#4CAF50")
-root.option_add("*Button.Foreground", "white")
-root.option_add("*Button.BorderWidth", 0)
+# Load the custom font (e.g., Montserrat)
+custom_font_path = Path(__file__).parent / "fonts" / "Montserrat-Regular.ttf"
+custom_font = tkFont.Font(family="Montserrat", size=12)
 
-# Variables for the checkboxes
+# Variables for checkboxes
 number_var = tk.BooleanVar()
-length_var = tk.IntVar(value=8)  # Default length is 8
+length_var = tk.IntVar(value=10)
 fantasy_var = tk.BooleanVar()
 futuristic_var = tk.BooleanVar()
 funny_var = tk.BooleanVar()
 
-# UI elements with padding for modern look
-tk.Label(root, text="UNGenerator-Phi", font=("Arial", 18, "bold"), bg="#F0F0F0", pady=10).pack()
+# UI elements
+tk.Label(root, text="UNGenerator-Phi", font=("Montserrat", 18), bg="#1F1F1F", fg="#FFFFFF").pack(pady=10)
 
 # Debug box
-debug_frame = tk.Frame(root, bg="#F0F0F0")
+debug_frame = tk.Frame(root, bg="#1F1F1F")
 debug_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
-debug_label = tk.Label(debug_frame, text="Debug Output:", bg="#F0F0F0", anchor="w", padx=10)
-debug_label.pack(anchor="w")
+debug_label = tk.Label(debug_frame, text="Debug Output:", anchor="w", bg="#1F1F1F", fg="#FFFFFF", font=custom_font)
+debug_label.pack(anchor="w", padx=5)
 
-debug_text = tk.Text(debug_frame, height=10, wrap="word", bg="#FFF", relief="flat", bd=1)
+debug_text = tk.Text(debug_frame, height=10, state="normal", wrap="word", bg="#2E2E2E", fg="#FFFFFF", relief="flat", bd=1, font=custom_font)
 debug_text.pack(fill="both", padx=10, pady=5, expand=True)
 
-# Create a frame for the checkboxes
-options_frame = tk.Frame(root, bg="#F0F0F0")
+# Frame for checkboxes
+options_frame = tk.Frame(root, bg="#1F1F1F")
 options_frame.pack(anchor='w', padx=20, pady=5)
 
-# Checkboxes in a row for modern layout
-tk.Checkbutton(options_frame, text="Include Numbers", variable=number_var, bg="#F0F0F0").pack(side="left", padx=5)
-tk.Checkbutton(options_frame, text="Fantasy Theme", variable=fantasy_var, bg="#F0F0F0").pack(side="left", padx=5)
-tk.Checkbutton(options_frame, text="Futuristic Theme", variable=futuristic_var, bg="#F0F0F0").pack(side="left", padx=5)
-tk.Checkbutton(options_frame, text="Funny Theme", variable=funny_var, bg="#F0F0F0").pack(side="left", padx=5)
+# Checkboxes
+tk.Checkbutton(options_frame, text="Include Numbers", variable=number_var, bg="#1F1F1F", fg="#FFFFFF", selectcolor="#2E2E2E", font=custom_font).pack(side="left", padx=5)
+tk.Checkbutton(options_frame, text="Fantasy Theme", variable=fantasy_var, bg="#1F1F1F", fg="#FFFFFF", selectcolor="#2E2E2E", font=custom_font).pack(side="left", padx=5)
+tk.Checkbutton(options_frame, text="Futuristic Theme", variable=futuristic_var, bg="#1F1F1F", fg="#FFFFFF", selectcolor="#2E2E2E", font=custom_font).pack(side="left", padx=5)
+tk.Checkbutton(options_frame, text="Funny Theme", variable=funny_var, bg="#1F1F1F", fg="#FFFFFF", selectcolor="#2E2E2E", font=custom_font).pack(side="left", padx=5)
 
-tk.Label(root, text="Username Length:", font=("Arial", 12), bg="#F0F0F0").pack(anchor='w', padx=20, pady=5)
-tk.Entry(root, textvariable=length_var, relief="flat", bd=1).pack(anchor='w', padx=20, pady=5)
+tk.Label(root, text="Username Length:", font=custom_font, bg="#1F1F1F", fg="#FFFFFF").pack(anchor='w', padx=20, pady=5)
+tk.Entry(root, textvariable=length_var, bg="#2E2E2E", fg="#FFFFFF", relief="flat", font=custom_font).pack(anchor='w', padx=20)
 
 # Generate button
-tk.Button(root, text="Generate Username", command=threaded_username_generation, padx=20, pady=10).pack(pady=20)
+tk.Button(root, text="Generate Username", command=threaded_username_generation, bg="#4CAF50", fg="#FFFFFF", relief="flat", font=custom_font).pack(pady=20)
 
-# Footer with version and GitHub link
-footer_frame = tk.Frame(root, bg="#F0F0F0")
+# Footer
+footer_frame = tk.Frame(root, bg="#1F1F1F")
 footer_frame.pack(side="bottom", fill="x", pady=10)
 
-version_label = tk.Label(footer_frame, text="Version 1.3", anchor="e", bg="#F0F0F0")
+version_label = tk.Label(footer_frame, text="Version 1.3", anchor="e", bg="#1F1F1F", fg="#FFFFFF", font=custom_font)
 version_label.pack(side="right", padx=10)
 
-github_link = tk.Label(footer_frame, text="By: tassopsaltakis", fg="blue", cursor="hand2", bg="#F0F0F0", anchor="w")
+github_link = tk.Label(footer_frame, text="By: tassopsaltakis", fg="#4CAF50", cursor="hand2", bg="#1F1F1F", font=custom_font)
 github_link.pack(side="left", padx=10)
 github_link.bind("<Button-1>", lambda e: open_github())
 
-# Start the GUI loop
 root.mainloop()
