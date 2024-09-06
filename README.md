@@ -1,20 +1,21 @@
-# UnGenPhi
+# UNGenerator-Phi
 
-UnGenPhi is a user-name generator that combines the power of **Phi-3.5-mini-instruct** and **GPT4ALL** to provide unique and creative usernames. The tool uses GPT4ALL as a handler for the Phi model, allowing seamless interaction and username generation.
+UNGenerator-Phi is a customizable username generator that allows users to generate unique usernames based on specific criteria. Powered by Llama, the application provides options to generate usernames with fantasy, futuristic, or funny themes, as well as the ability to include numbers. It also supports real-time validation and refinement of generated usernames to meet the user's requirements.
 
 ## Features
 
-- **AI-Powered Username Generation:** Generates creative and pronounceable usernames based on user preferences.
-- **Customizable Options:** Adjust username length and character inclusion (e.g., numbers) through user settings.
-- **Efficient Processing:** Uses GPT4ALL to manage and interface with the Phi model for optimal performance.
+- **Customizable Themes**: Choose between Fantasy, Futuristic, and Funny themes to customize the username generation.
+- **Include Numbers Option**: Decide whether the generated usernames should include numbers.
+- **Username Length Selection**: Specify the exact length of the username you want to generate.
+- **Real-time Validation**: The program validates usernames to ensure they meet the criteria and refines them if necessary.
+- **Debug Output**: View the real-time generation process, including the prompt used and the validation results.
+- **Responsive Interface**: The application’s interface remains responsive thanks to threaded username generation.
 
-## Models Used
+## Requirements
 
-- **Phi-3.5-mini-instruct:** Advanced model for generating user-friendly outputs.
-  - [Find Model Info Here](https://huggingface.co/microsoft/Phi-3.5-mini-instruct)
+- **Python 3.8+**
+- **Llama-cpp** (for loading the Phi model)
+- **Tkinter** (for the GUI)
+- **Webbrowser**, **Regex**, and **Pathlib** libraries
 
-- **GPT4ALL:** Provides a robust interface for interacting with the Phi model.
-  - [Find GPT4ALL Info Here](https://github.com/nomic-ai/gpt4all)
-
-### WARNING
-- The Model is too large for GitHub; I have it here on GoogleDrive in case you want to contribute to the project and test: https://drive.google.com/file/d/1M1Mu2QmKXVHzyInvyBgpaib_mq1Fk96E/view?usp=sharing
+You can install these using `pip`:
