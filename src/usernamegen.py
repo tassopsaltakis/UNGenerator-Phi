@@ -41,79 +41,63 @@ def open_github():
 
 # Function to validate the generated username based on the toggles
 def validate_username(username, length, allow_numbers):
-    # Construct a regex pattern based on the toggles
-    pattern = "^[A-Za-z"  # Start with allowing letters
+    pattern = "^[A-Za-z"
     if allow_numbers:
-        pattern += "0-9"  # Allow numbers if the toggle is on
-    pattern += "]{" + str(length) + "}$"  # Enforce the exact length
+        pattern += "0-9"
+    pattern += "]{" + str(length) + "}$"
     return re.match(pattern, username) is not None
 
 # Function to refine an invalid username by stripping invalid characters
 def refine_username(username, length, allow_numbers):
-    # Build the allowed character set based on toggles
     allowed_characters = "A-Za-z"
     if allow_numbers:
         allowed_characters += "0-9"
 
-    # Remove any characters not in the allowed set
     refined_username = re.sub(f'[^{allowed_characters}]', '', username)
-
-    # Truncate to the required length if necessary
     return refined_username[:length]
 
 # Function to generate a username based on user selections (runs in a separate thread)
 def generate_username():
-    # Collect checkbox values
     allow_numbers = number_var.get()
     length = length_var.get()
     fantasy = fantasy_var.get()
     futuristic = futuristic_var.get()
     funny = funny_var.get()
 
-    # Adjust the prompt based on user selection of toggles
     prompt = (
         f"Generate a unique username for online use that is exactly {length} characters long. "
         f"{'It may include numbers,' if allow_numbers else 'It must not include numbers,'} "
     )
-
-    # Modify the prompt based on the additional options
     if fantasy:
         prompt += "The username should have a fantasy theme, like from a mythical world. "
     if futuristic:
-        prompt += "The username should have a futuristic, sci-fi vibe, something from the future. "
+        prompt += "The username should have a futuristic, sci-fi vibe. "
     if funny:
-        prompt += "Make the username funny, with a playful or humorous twist. "
+        prompt += "Make the username funny, with a humorous twist. "
 
     prompt += "Only respond with the username itself and nothing else."
 
     try:
         valid_username = False
         while not valid_username:
-            # Generate a username using the AI model
-            debug_text.insert(tk.END, f"Prompt: {prompt}\n")  # Add the prompt to the debug box
-
-            # Suppress Llama output during generation
+            debug_text.insert(tk.END, f"Prompt: {prompt}\n")
             with suppress_output():
                 response = model(prompt, max_tokens=30)
                 username = response['choices'][0]['text'].strip()
 
-            # Extract the first valid word from the response
             username = username.split(':')[1].strip() if ':' in username else username
             debug_text.insert(tk.END, f"Generated Username (before validation): {username}\n")
 
-            # Validate the username
             if validate_username(username, length, allow_numbers):
                 valid_username = True
                 debug_text.insert(tk.END, f"Valid Username: {username}\n")
             else:
-                # Refine the username and attempt to fix it
                 debug_text.insert(tk.END, f"Invalid username: {username}, refining...\n")
                 username = refine_username(username, length, allow_numbers)
                 debug_text.insert(tk.END, f"Refined Username: {username}\n")
                 if validate_username(username, length, allow_numbers):
                     valid_username = True
 
-        # Display the validated username in a message box (in the main thread)
         root.after(0, lambda: messagebox.showinfo("Generated Username", f"Your username: {username}"))
 
     except Exception as e:
@@ -123,10 +107,17 @@ def generate_username():
 def threaded_username_generation():
     threading.Thread(target=generate_username).start()
 
-# Setting up the GUI
+# Setting up the modern UI
 root = tk.Tk()
 root.title("UNGenerator-Phi")
-root.geometry("600x450")
+root.geometry("620x600")
+
+# Apply modern styling
+root.configure(bg="#F0F0F0")
+root.option_add("*Font", "Arial 12")
+root.option_add("*Button.Background", "#4CAF50")
+root.option_add("*Button.Foreground", "white")
+root.option_add("*Button.BorderWidth", 0)
 
 # Variables for the checkboxes
 number_var = tk.BooleanVar()
@@ -135,43 +126,43 @@ fantasy_var = tk.BooleanVar()
 futuristic_var = tk.BooleanVar()
 funny_var = tk.BooleanVar()
 
-# UI elements
-tk.Label(root, text="UNGenerator-Phi", font=("Arial", 16)).pack(pady=10)
+# UI elements with padding for modern look
+tk.Label(root, text="UNGenerator-Phi", font=("Arial", 18, "bold"), bg="#F0F0F0", pady=10).pack()
 
-# Debug box to show the process of generation
-debug_frame = tk.Frame(root)
+# Debug box
+debug_frame = tk.Frame(root, bg="#F0F0F0")
 debug_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
-debug_label = tk.Label(debug_frame, text="Debug Output:", anchor="w")
-debug_label.pack(anchor="w", padx=5)
+debug_label = tk.Label(debug_frame, text="Debug Output:", bg="#F0F0F0", anchor="w", padx=10)
+debug_label.pack(anchor="w")
 
-debug_text = tk.Text(debug_frame, height=10, state="normal", wrap="word", bg="#f0f0f0", relief="sunken", bd=1)
+debug_text = tk.Text(debug_frame, height=10, wrap="word", bg="#FFF", relief="flat", bd=1)
 debug_text.pack(fill="both", padx=10, pady=5, expand=True)
 
-# Create a frame for the checkboxes to align them horizontally
-options_frame = tk.Frame(root)
+# Create a frame for the checkboxes
+options_frame = tk.Frame(root, bg="#F0F0F0")
 options_frame.pack(anchor='w', padx=20, pady=5)
 
-# Checkboxes in a row
-tk.Checkbutton(options_frame, text="Include Numbers", variable=number_var).pack(side="left", padx=5)
-tk.Checkbutton(options_frame, text="Fantasy Theme", variable=fantasy_var).pack(side="left", padx=5)
-tk.Checkbutton(options_frame, text="Futuristic Theme", variable=futuristic_var).pack(side="left", padx=5)
-tk.Checkbutton(options_frame, text="Funny Theme", variable=funny_var).pack(side="left", padx=5)
+# Checkboxes in a row for modern layout
+tk.Checkbutton(options_frame, text="Include Numbers", variable=number_var, bg="#F0F0F0").pack(side="left", padx=5)
+tk.Checkbutton(options_frame, text="Fantasy Theme", variable=fantasy_var, bg="#F0F0F0").pack(side="left", padx=5)
+tk.Checkbutton(options_frame, text="Futuristic Theme", variable=futuristic_var, bg="#F0F0F0").pack(side="left", padx=5)
+tk.Checkbutton(options_frame, text="Funny Theme", variable=funny_var, bg="#F0F0F0").pack(side="left", padx=5)
 
-tk.Label(root, text="Username Length:", font=("Arial", 12)).pack(anchor='w', padx=20, pady=5)
-tk.Entry(root, textvariable=length_var).pack(anchor='w', padx=20)
+tk.Label(root, text="Username Length:", font=("Arial", 12), bg="#F0F0F0").pack(anchor='w', padx=20, pady=5)
+tk.Entry(root, textvariable=length_var, relief="flat", bd=1).pack(anchor='w', padx=20, pady=5)
 
-# Generate button (triggers the threaded function)
-tk.Button(root, text="Generate Username", command=threaded_username_generation).pack(pady=20)
+# Generate button
+tk.Button(root, text="Generate Username", command=threaded_username_generation, padx=20, pady=10).pack(pady=20)
 
 # Footer with version and GitHub link
-footer_frame = tk.Frame(root)
+footer_frame = tk.Frame(root, bg="#F0F0F0")
 footer_frame.pack(side="bottom", fill="x", pady=10)
 
-version_label = tk.Label(footer_frame, text="Version 1.3", anchor="e")
+version_label = tk.Label(footer_frame, text="Version 1.3", anchor="e", bg="#F0F0F0")
 version_label.pack(side="right", padx=10)
 
-github_link = tk.Label(footer_frame, text="By: tassopsaltakis", fg="blue", cursor="hand2", anchor="w")
+github_link = tk.Label(footer_frame, text="By: tassopsaltakis", fg="blue", cursor="hand2", bg="#F0F0F0", anchor="w")
 github_link.pack(side="left", padx=10)
 github_link.bind("<Button-1>", lambda e: open_github())
 
