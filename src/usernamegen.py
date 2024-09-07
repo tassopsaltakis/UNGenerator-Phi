@@ -111,7 +111,7 @@ root.geometry("620x600")
 root.config(bg="#1F1F1F")  # Dark background
 
 # Load the custom font (AkshaRegular.ttf)
-custom_font_path = Path(__file__).parent / "fonts" / "AakashaRegular.ttf"
+custom_font_path = Path(__file__).parent / "fonts" / "AkashaRegular.ttf"
 root.tk.call("font", "create", "AkashaRegular", "-family", "AkashaRegular", "-size", 12)
 custom_font = tkFont.Font(family="AkashaRegular", size=12)
 
